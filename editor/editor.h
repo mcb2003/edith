@@ -18,16 +18,10 @@
 author: Michael Connor Buchan <mikey@blindcomputing.org.>
 */
 
-#include <stdio.h>
+#ifndef edith_editor_h
+#define edith_editor_h
 
-#include <curses.h>
-#include <display.h>
-#include <editor.h>
+void editor_init(void);
+void editor_fini(void);
 
-int main() {
-  editor_init();
-  display_init();
-  addstr("Hello, world!");
-  getch();
-  return 0;
-}
+#endif

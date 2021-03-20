@@ -18,16 +18,10 @@
 author: Michael Connor Buchan <mikey@blindcomputing.org.>
 */
 
-#include <stdio.h>
+#include <stdlib.h>
 
-#include <curses.h>
-#include <display.h>
-#include <editor.h>
+#include "editor.h"
 
-int main() {
-  editor_init();
-  display_init();
-  addstr("Hello, world!");
-  getch();
-  return 0;
-}
+void editor_init() { atexit(editor_fini); }
+
+void editor_fini() {}
