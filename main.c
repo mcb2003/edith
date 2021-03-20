@@ -18,6 +18,7 @@
 author: Michael Connor Buchan <mikey@blindcomputing.org.>
 */
 
+#include <locale.h>
 #include <stdio.h>
 
 #include <curses.h>
@@ -25,6 +26,7 @@ author: Michael Connor Buchan <mikey@blindcomputing.org.>
 #include <editor.h>
 
 int main() {
+  setlocale(LC_ALL, "");
   editor_init();
   display_init();
   addstr("Hello, world!");
