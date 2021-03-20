@@ -20,7 +20,12 @@ author: Michael Connor Buchan <mikey@blindcomputing.org.>
 
 #include <stdio.h>
 
+#include <curses.h>
+#include <display.h>
+
 int main() {
-  puts("Hello, world");
+  display_init();
+  addstr("Hello, world!");
+  getch();
   return 0;
 }
