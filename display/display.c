@@ -30,6 +30,7 @@ void display_init() {
   cbreak();
   noecho();
   keypad(stdscr, true);
+  clear();
 }
 
 void display_fini() { endwin(); }
