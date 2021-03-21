@@ -36,4 +36,7 @@ void gb_create(struct gap_buffer *gb);
 bool gb_prealloc(struct gap_buffer *gb, size_t len);
 void gb_free(struct gap_buffer *gb);
 
+char *gb_get(struct gap_buffer *gb, size_t index);
+char *gb_get_unchecked(struct gap_buffer *gb, size_t index);
+
 #endif

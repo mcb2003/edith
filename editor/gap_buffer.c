@@ -54,3 +54,15 @@ void gb_free(struct gap_buffer *gb) {
     free(gb->data);
   gb_create(gb); // Resets all fields to defaults
 }
+
+inline char *gb_get(struct gap_buffer *gb, size_t index) {
+  if (index > gb->len)
+    return NULL;
+  return gb_get_unchecked(gb, index);
+}
+
+char *gb_get_unchecked(struct gap_buffer *gb, size_t index) {
+  if (index < (gb->gap_start - gb->data))
+    return gb->data + index;
+  return gb->data + (index + (gb->gap_end - gb->gap_start));
+}
