@@ -18,32 +18,22 @@
 author: Michael Connor Buchan <mikey@blindcomputing.org.>
 */
 
-#include <stdio.h>
-#include <stdlib.h>
+#ifndef EDITH_GAP_BUFFER_H
+#define EDITH_GAP_BUFFER_H
+#include <stdbool.h>
+#include <stddef.h>
 
-#include "buffer.h"
-#include "editor.h"
+extern const size_t GB_GAP_SIZE;
 
-/* Global Data */
+struct gap_buffer {
+  char *data;
+  char *gap_start;
+  char *gap_end;
+  size_t len;
+};
 
-// The circular list of buffers
-static struct buffer *G_BUFFERS;
-// The currently selected buffer
-static struct buffer *G_CURRENT_BUFFER;
+void gb_create(struct gap_buffer *gb);
+bool gb_prealloc(struct gap_buffer *gb, size_t len);
+void gb_free(struct gap_buffer *gb);
 
-void editor_init() {
-  G_BUFFERS = buffer_create("Untitled");
-  if (!G_BUFFERS) {
-    perror("Could not create initial buffer");
-    exit(EXIT_FAILURE);
-  }
-  atexit(editor_fini);
-
-  // Set up the circular chain
-  G_BUFFERS->next = G_BUFFERS;
-  G_BUFFERS->prev = G_BUFFERS;
-
-  G_CURRENT_BUFFER = G_BUFFERS;
-}
-
-void editor_fini() { buffer_free(G_BUFFERS); }
+#endif

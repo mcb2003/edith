@@ -20,14 +20,19 @@ author: Michael Connor Buchan <mikey@blindcomputing.org.>
 
 #ifndef EDITH_BUFFER_H
 #define EDITH_BUFFER_H
+#include <sys/stat.h>
+
+#include "gap_buffer.h"
 
 struct buffer {
   struct buffer *next;
   struct buffer *prev;
   char *name;
+  struct gap_buffer content;
 };
 
 struct buffer *buffer_create(const char *name);
+struct buffer *buffer_open(const char *fname, int flags, mode_t mode);
 void buffer_free(struct buffer *buf);
 
 #endif

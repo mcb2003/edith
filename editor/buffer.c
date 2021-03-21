@@ -19,10 +19,16 @@ author: Michael Connor Buchan <mikey@blindcomputing.org.>
 */
 
 #include <assert.h>
+#include <errno.h>
+#include <fcntl.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/stat.h>
+#include <unistd.h>
 
 #include "buffer.h"
+#include "gap_buffer.h"
 
 struct buffer *buffer_create(const char *name) {
   struct buffer *buf = malloc(sizeof(struct buffer));
@@ -31,11 +37,54 @@ struct buffer *buffer_create(const char *name) {
   buf->name = strdup(name);
   if (!buf->name)
     return NULL;
+  gb_create(&buf->content);
   return buf;
+}
+
+struct buffer *buffer_open(const char *fname, int flags, mode_t mode) {
+  struct buffer *buf = malloc(sizeof(struct buffer));
+  if (!buf)
+    return NULL;
+  buf->name = strdup(fname);
+  if (!buf->name) {
+    free(buf);
+    return NULL;
+  }
+
+  int fd;
+  if ((fd = open(fname, flags, mode)) < 0) {
+    fprintf(stderr, "Could not open file %s: %s", fname, strerror(errno));
+    goto free_buf;
+  }
+  // Get the file size to preallocate the gap buffer
+  struct stat stats;
+  if (fstat(fd, &stats) < 0) {
+    perror("stat");
+    goto close_fd;
+  }
+  if (!gb_prealloc(&buf->content, stats.st_size)) {
+    perror("Could not allocate buffer");
+    goto close_fd;
+  }
+  // Copy the file's contents into the buffer
+  if (read(fd, buf->content.gap_end, stats.st_size) < 0) {
+    perror("read");
+    goto close_fd;
+  }
+  close(fd);
+  return buf;
+
+close_fd:
+  close(fd);
+free_buf:
+  free(buf->name);
+  free(buf);
+  return NULL;
 }
 
 void buffer_free(struct buffer *buf) {
   assert(buf);
+  gb_free(&buf->content);
   free(buf->name);
   free(buf);
 }

@@ -18,32 +18,39 @@
 author: Michael Connor Buchan <mikey@blindcomputing.org.>
 */
 
-#include <stdio.h>
+#include <assert.h>
+#include <stdbool.h>
+#include <stddef.h>
 #include <stdlib.h>
 
-#include "buffer.h"
-#include "editor.h"
+#include "gap_buffer.h"
 
-/* Global Data */
+const size_t GB_GAP_SIZE = 32;
 
-// The circular list of buffers
-static struct buffer *G_BUFFERS;
-// The currently selected buffer
-static struct buffer *G_CURRENT_BUFFER;
-
-void editor_init() {
-  G_BUFFERS = buffer_create("Untitled");
-  if (!G_BUFFERS) {
-    perror("Could not create initial buffer");
-    exit(EXIT_FAILURE);
-  }
-  atexit(editor_fini);
-
-  // Set up the circular chain
-  G_BUFFERS->next = G_BUFFERS;
-  G_BUFFERS->prev = G_BUFFERS;
-
-  G_CURRENT_BUFFER = G_BUFFERS;
+void gb_create(struct gap_buffer *gb) {
+  assert(gb);
+  gb->data = NULL;
+  gb->gap_start = NULL;
+  gb->gap_end = NULL;
+  gb->len = 0;
 }
 
-void editor_fini() { buffer_free(G_BUFFERS); }
+bool gb_prealloc(struct gap_buffer *gb, size_t len) {
+  assert(gb);
+  char *data = malloc(len + GB_GAP_SIZE);
+  if (!data)
+    return false;
+  gb->data = data;
+  gb->len = len + GB_GAP_SIZE;
+  // Gap is at the start by default
+  gb->gap_start = gb->data;
+  gb->gap_end = gb->gap_start + GB_GAP_SIZE;
+  return true;
+}
+
+void gb_free(struct gap_buffer *gb) {
+  assert(gb);
+  if (gb->data)
+    free(gb->data);
+  gb_create(gb); // Resets all fields to defaults
+}
