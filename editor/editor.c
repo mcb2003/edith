@@ -18,8 +18,10 @@
 author: Michael Connor Buchan <mikey@blindcomputing.org.>
 */
 
+#include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
 
 #include "buffer.h"
 #include "editor.h"
@@ -27,12 +29,12 @@ author: Michael Connor Buchan <mikey@blindcomputing.org.>
 /* Global Data */
 
 // The circular list of buffers
-static struct buffer *G_BUFFERS;
+struct buffer *G_BUFFERS;
 // The currently selected buffer
-static struct buffer *G_CURRENT_BUFFER;
+struct buffer *G_CURRENT_BUFFER;
 
 void editor_init() {
-  G_BUFFERS = buffer_create("Untitled");
+  G_BUFFERS = buffer_open("../editor/editor.h", O_RDONLY, 0);
   if (!G_BUFFERS) {
     perror("Could not create initial buffer");
     exit(EXIT_FAILURE);

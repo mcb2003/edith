@@ -21,6 +21,11 @@ author: Michael Connor Buchan <mikey@blindcomputing.org.>
 #ifndef edith_editor_h
 #define edith_editor_h
 
+// The circular list of buffers
+extern struct buffer *G_BUFFERS;
+// The currently selected buffer
+extern struct buffer *G_CURRENT_BUFFER;
+
 void editor_init(void);
 void editor_fini(void);
 

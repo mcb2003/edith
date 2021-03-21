@@ -21,15 +21,24 @@ author: Michael Connor Buchan <mikey@blindcomputing.org.>
 #include <locale.h>
 #include <stdio.h>
 
+#include <buffer.h>
 #include <curses.h>
 #include <display.h>
 #include <editor.h>
+#include <gap_buffer.h>
 
 int main() {
   setlocale(LC_ALL, "");
   editor_init();
   display_init();
-  addstr("Hello, world!");
+  // Display the current buffer
+  size_t left_len =
+      G_CURRENT_BUFFER->content.gap_start - G_CURRENT_BUFFER->content.data;
+  size_t buffer_size =
+      G_CURRENT_BUFFER->content.gap_end - G_CURRENT_BUFFER->content.gap_start;
+  addnstr(G_CURRENT_BUFFER->content.data, left_len);
+  addnstr(G_CURRENT_BUFFER->content.gap_end,
+          G_CURRENT_BUFFER->content.len - left_len - buffer_size);
   getch();
   return 0;
 }
