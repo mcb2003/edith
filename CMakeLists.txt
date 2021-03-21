@@ -21,6 +21,7 @@ project(edith VERSION 0.1.0)
 
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_C_STANDARD_REQUIRED ON)
+add_definitions(-D_POSIX_C_SOURCE=200809L)
 
 add_subdirectory(display)
 add_subdirectory(editor)
