@@ -18,31 +18,16 @@
 author: Michael Connor Buchan <mikey@blindcomputing.org.>
 */
 
-#include <stdlib.h>
+#ifndef EDITH_BUFFER_H
+#define EDITH_BUFFER_H
 
-#include "buffer.h"
-#include "editor.h"
+struct buffer {
+  struct buffer *next;
+  struct buffer *prev;
+  char *name;
+};
 
-/* Global Data */
+struct buffer *buffer_create(const char *name);
+void buffer_free(struct buffer *buf);
 
-// The circular list of buffers
-static struct buffer *G_BUFFERS;
-// The currently selected buffer
-static struct buffer *G_CURRENT_BUFFER;
-
-void editor_init() {
-  G_BUFFERS = buffer_create("Untitled");
-  if (!G_BUFFERS) {
-    perror("Could not create initial buffer");
-    exit(EXIT_FAILURE);
-  }
-  atexit(editor_fini);
-
-  // Set up the circular chain
-  G_BUFFERS->next = G_BUFFERS;
-  G_BUFFERS->prev = G_BUFFERS;
-
-  G_CURRENT_BUFFER = G_BUFFERS;
-}
-
-void editor_fini() { buffer_free(G_BUFFERS); }
+#endif

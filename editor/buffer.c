@@ -18,31 +18,24 @@
 author: Michael Connor Buchan <mikey@blindcomputing.org.>
 */
 
+#include <assert.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "buffer.h"
-#include "editor.h"
 
-/* Global Data */
-
-// The circular list of buffers
-static struct buffer *G_BUFFERS;
-// The currently selected buffer
-static struct buffer *G_CURRENT_BUFFER;
-
-void editor_init() {
-  G_BUFFERS = buffer_create("Untitled");
-  if (!G_BUFFERS) {
-    perror("Could not create initial buffer");
-    exit(EXIT_FAILURE);
-  }
-  atexit(editor_fini);
-
-  // Set up the circular chain
-  G_BUFFERS->next = G_BUFFERS;
-  G_BUFFERS->prev = G_BUFFERS;
-
-  G_CURRENT_BUFFER = G_BUFFERS;
+struct buffer *buffer_create(const char *name) {
+  struct buffer *buf = malloc(sizeof(struct buffer));
+  if (!buf)
+    return NULL;
+  buf->name = strdup(name);
+  if (!buf->name)
+    return NULL;
+  return buf;
 }
 
-void editor_fini() { buffer_free(G_BUFFERS); }
+void buffer_free(struct buffer *buf) {
+  assert(buf);
+  free(buf->name);
+  free(buf);
+}
